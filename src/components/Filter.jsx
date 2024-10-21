@@ -1,11 +1,19 @@
 import React, { useState } from 'react';
 
-const Filter = ({ onFilterChange }) => {
+const Filter = ({handleFilterChange}) => {
   const [tipo, setTipo] = useState('');
   const [nombre, setNombre] = useState('');
 
-  const handleFilterChange = () => {
-    onFilterChange({ tipo, nombre});
+  const handleTipoChange = (e) => {
+    const newTipo = e.target.value;
+    setTipo(newTipo);
+    handleFilterChange({ tipo: newTipo, nombre });
+  };
+
+  const handleNombreChange = (e) => {
+    const newNombre = e.target.value;
+    setNombre(newNombre);
+    handleFilterChange({ tipo, nombre: newNombre });
   };
 
   return (
@@ -14,10 +22,11 @@ const Filter = ({ onFilterChange }) => {
       
       <label>
         Tipo:
-        <select value={tipo} onChange={(e) => { setTipo(e.target.value); handleFilterChange(); }}>
+        <select value={tipo} onChange={handleTipoChange}>
           <option value="">Todos</option>
-          <option value="perro">perro</option>
-          <option value="gato">gato</option>
+          <option value="Perro">Perro</option>
+          <option value="Gato">Gato</option>
+          <option value="Conejo">Conejo</option>
         </select>
       </label>
 
@@ -26,7 +35,7 @@ const Filter = ({ onFilterChange }) => {
         <input 
           type="text" 
           value={nombre} 
-          onChange={(e) => { setNombre(e.target.value); handleFilterChange(); }} 
+          onChange={handleNombreChange} 
         />
       </label>
     </div>

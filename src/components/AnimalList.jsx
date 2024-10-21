@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import './AnimalList.css'; 
-import Filter from './Filter'; 
+import React, { useState, useEffect } from 'react';
+import './AnimalList.css';
+import Filter from './Filter';
+import AdoptionForm from './AdoptionForm';
 
 const AnimalList = () => {
   const [animals, setAnimals] = useState([]);
   const [filteredAnimals, setFilteredAnimals] = useState([]);
+  const [selectedAnimal, setSelectedAnimal] = useState(null);
 
   useEffect(() => {
     fetch('./data/animalAPI.json')
@@ -22,21 +24,31 @@ const AnimalList = () => {
 
   const handleFilterChange = (filters) => {
     const { tipo, nombre } = filters;
+    console.log(filters);
   
     const filtered = animals.filter(animal => {
-      const tipoMatch = tipo ? animal.tipo === tipo : true; 
-      const nombreMatch = nombre ? animal.nombre.toLowerCase().includes(nombre.toLowerCase()) : true; 
+      const tipoMatch = tipo ? animal.tipo.toLowerCase().trim() === tipo.toLowerCase().trim() : true; 
+      const nombreMatch = nombre ? animal.nombre.toLowerCase().includes(nombre.toLowerCase().trim()) : true; 
   
-      return tipoMatch && nombreMatch; 
+      return tipoMatch && nombreMatch;
     });
-  
+
     setFilteredAnimals(filtered);
+  };
+
+  const handleAdoptClick = (animal) => {
+    const newAnimal = animal;
+    setSelectedAnimal(newAnimal);
+    console.log(newAnimal);
+  };
+  const handleCloseForm = () => {
+    setSelectedAnimal(null); 
   };
 
   return (
     <div>
       <h2>Animales Disponibles para Adopción</h2>
-      <Filter onFilterChange={handleFilterChange} />
+      <Filter handleFilterChange={handleFilterChange} />
       <div className="animal-grid">
         {filteredAnimals.length > 0 ? (
           filteredAnimals.map((animal) => (
@@ -58,35 +70,19 @@ const AnimalList = () => {
                   title={animal.color} 
                 />
               </div>
-              <div className="description" dangerouslySetInnerHTML={{ __html: animal.desc_personalidad }} />
               <a href={animal.url} target="_blank" rel="noopener noreferrer">Ver más detalles</a>
+              <button className='adopt-button' onClick={() => handleAdoptClick(animal)}>Adoptar</button> 
             </div>
           ))
         ) : (
           <p>No se encontraron mascotas que coincidan con los filtros.</p>
         )}
       </div>
+      {selectedAnimal && (
+        <AdoptionForm animal={selectedAnimal} onClose={handleCloseForm} />
+      )}
     </div>
   );
 };
 
 export default AnimalList;
-
-
-
-
-
-
-
-
-/*
-<h3>{animal.nombre}</h3>
-<p>Tipo: {animal.tipo}</p>
-<p>Edad: {animal.edad}</p>
-<p>Estado: {animal.estado}</p>
-<p>Genero: {animal.genero}</p>
-<h3>Descripción:</h3>
-<div dangerouslySetInnerHTML={{ __html: animal.desc_personalidad }} />
-<div dangerouslySetInnerHTML={{ __html: animal.desc_adicional }} />
-
-*/
